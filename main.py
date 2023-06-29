@@ -4,7 +4,7 @@ def main():
     args = argumentor.Argumentor().get_argument()
     
     generator = qr.CodeGenerator(args.text, args.filename, args.folder, args.version,
-        args.box_size, args.border, args.format, args.fill_color, args.bg)
+        args.box_size, args.border, args.format, args.fill_color, args.bg, args.method)
     
     generator.create()
 

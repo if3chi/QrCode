@@ -12,5 +12,6 @@ class Argumentor:
         parser.add_argument('--format', type=str, default='png', help='Output image format')
         parser.add_argument('--fill-color', type=str, default='black', help='QR Code fill color')
         parser.add_argument('--bg', type=str, default='white', help='QR Code background color')
+        parser.add_argument('--method', type=str, default='path', help='Method to choose which factory to use (basic, fragment, path)')
 
         return parser.parse_args()
