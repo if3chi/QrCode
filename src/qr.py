@@ -3,10 +3,11 @@ import os
 import qrcode
 
 class CodeGenerator:
-    def __init__(self, text: str, filename:str, save_dir:str, box_size=10, border=4, image_format='png', fill_color="black", back_color="white"):
+    def __init__(self, text: str, filename: str, save_dir="./output", version=1, box_size=10, border=4, image_format='png', fill_color="black", back_color="white"):
         self.text = text
         self.filename = filename
         self.save_dir = save_dir
+        self.version = self._set_version(version)
         self.box_size = box_size
         self.border = border
         self.image_format = image_format
@@ -15,7 +16,7 @@ class CodeGenerator:
 
     def create(self):
         qr = qrcode.QRCode(
-            version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, 
+            version=self.version, error_correction=qrcode.constants.ERROR_CORRECT_L, 
             box_size=self.box_size, border=self.border
         )
         qr.add_data(self.text)
@@ -34,4 +35,7 @@ class CodeGenerator:
     
     def _message(self):
         print(f"QR Code saved as {self.filename} in folder: {self.save_dir}.")
+
+    def _set_version(self, version: int)->int:
+        return 4 if version > 26 else version
     
