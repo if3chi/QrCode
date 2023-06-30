@@ -1,7 +1,6 @@
-import os
-
 import qrcode
 import qrcode.image.svg
+from .concerns import qr_utils as util
 
 class CodeGenerator:
     _is_svg = False
@@ -11,14 +10,13 @@ class CodeGenerator:
         self.data = text
         self.filename = filename
         self.save_dir = save_dir
-        self.version = self._set_version(version)
+        self.version = util.set_version(version)
         self.box_size = box_size
         self.border = border
         self.image_format = image_format
         self.fill_color = fill_color
         self.back_color = back_color
         self.method = method
-
 
     def create(self):
         self._is_svg = self.image_format.lower() == 'svg'
@@ -28,24 +26,7 @@ class CodeGenerator:
         else:
             status_code = self._create_img_code()
 
-        self._message(status_code)
-        
-
-    def _get_output_path(self) -> str:
-        if self._is_svg:
-            self.save_dir =os.path.join(self.save_dir, 'svgs')
-
-        os.makedirs(self.save_dir, exist_ok=True)
-
-        return os.path.join(self.save_dir, f"{self.filename}.{self.image_format}")
-    
-    def _message(self, code: (int|None)):
-        msg = f"{'SVG ' if self._is_svg else ''}QR Code saved as {self.filename} in folder: {self.save_dir}." \
-            if code == 1 else "Operation Unsuccessful"
-        print(msg)
-
-    def _set_version(self, version: int)->int:
-        return 4 if version > 26 else version
+        util.message(self, status_code)
     
     def _create_img_code(self) -> (int | None):
         try:
@@ -58,7 +39,7 @@ class CodeGenerator:
 
             image = qr.make_image(fill_color=self.fill_color, back_color=self.back_color)
             
-            image.save(self._get_output_path())
+            image.save(util.get_output_path(self))
             return 1
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -74,7 +55,7 @@ class CodeGenerator:
 
             img = qrcode.make(self.data, image_factory = factory)
 
-            img.save(self._get_output_path())
+            img.save(util.get_output_path(self))
 
             return 1
         except Exception as e:
