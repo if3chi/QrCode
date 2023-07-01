@@ -1,12 +1,12 @@
 import qrcode
 import qrcode.image.svg
-from .concerns import qr_utils as util
+from .concerns import qr_util as util
 
 class CodeGenerator:
     _is_svg = False
 
     def __init__(self, text: str, filename: str, save_dir="./output", version=1, box_size=10, border=4, 
-                 image_format='png', fill_color="black", back_color="white", method="basic"):
+                 image_format='png', fill_color="black", back_color="white", method="basic", fill_svg_bg = True):
         self.data = text
         self.filename = filename
         self.save_dir = save_dir
@@ -17,6 +17,7 @@ class CodeGenerator:
         self.fill_color = fill_color
         self.back_color = back_color
         self.method = method
+        self.fill_svg_bg = fill_svg_bg
 
     def create(self):
         self._is_svg = self.image_format.lower() == 'svg'
@@ -47,11 +48,11 @@ class CodeGenerator:
     def _create_svg_code(self) -> (int | None):
         try:
             if self.method == 'basic':
-                factory = qrcode.image.svg.SvgImage
+                factory = qrcode.image.svg.SvgFillImage if self.fill_svg_bg else qrcode.image.svg.SvgImage
             elif self.method == 'fragment':
                 factory = qrcode.image.svg.SvgFragmentImage
             elif self.method == 'path':
-                factory = qrcode.image.svg.SvgPathImage
+                factory = qrcode.image.svg.SvgPathFillImage if self.fill_svg_bg else qrcode.image.svg.SvgPathImage
 
             qr = qrcode.QRCode(
                 version=self.version, error_correction=qrcode.constants.ERROR_CORRECT_L, 
@@ -60,7 +61,7 @@ class CodeGenerator:
             qr.add_data(self.data)
             qr.make(fit=True)
 
-            image = qr.make_image(fill_color=self.fill_color, back_color=self.back_color)
+            image = qr.make_image(fill=self.fill_color)
 
             image.save(util.get_output_path(self))
 
