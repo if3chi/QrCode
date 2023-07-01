@@ -53,9 +53,16 @@ class CodeGenerator:
             elif self.method == 'path':
                 factory = qrcode.image.svg.SvgPathImage
 
-            img = qrcode.make(self.data, image_factory = factory)
+            qr = qrcode.QRCode(
+                version=self.version, error_correction=qrcode.constants.ERROR_CORRECT_L, 
+                box_size=self.box_size, border=self.border, image_factory= factory
+            )
+            qr.add_data(self.data)
+            qr.make(fit=True)
 
-            img.save(util.get_output_path(self))
+            image = qr.make_image(fill_color=self.fill_color, back_color=self.back_color)
+
+            image.save(util.get_output_path(self))
 
             return 1
         except Exception as e:
